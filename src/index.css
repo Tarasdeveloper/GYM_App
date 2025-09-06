@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+button {
+    cursor: pointer;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+span {
+    font-family: inherit;
+    font-weight: inherit;
+}
+
+.blueShadow {
+    box-shadow: 3px 3px 0 0 #60a5fa;
+}
+
+.blueShadow:hover {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 0 #60a5fa;
+}
