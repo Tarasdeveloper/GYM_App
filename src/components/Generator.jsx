@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SCHEMES, WORKOUTS } from '../utils/swoldier';
 import SectionWrapper from './SectionWrapper';
+import Button from './Button';
 
 function Header({ index, title, description }) {
     return (
@@ -16,14 +17,37 @@ function Header({ index, title, description }) {
     );
 }
 
-export default function Generator() {
+export default function Generator({
+    poison,
+    setPoison,
+    muscles,
+    setMuscles,
+    goal,
+    setGoal,
+}) {
     const [showModal, setShowModal] = useState(false);
-    const [poison, setPoison] = useState('individual');
-    const [muscles, setMuscles] = useState([]);
-    const [goal, setGoal] = useState('strength_power');
 
     function toggleselect() {
         setShowModal((prev) => !prev);
+    }
+
+    function updateMuscles(muscleGroup) {
+        if (muscles.includes(muscleGroup)) {
+            setMuscles(muscles.filter((m) => m !== muscleGroup));
+            return;
+        }
+        if (muscles.length > 2) return;
+
+        if (poison !== 'individual') {
+            setMuscles([muscleGroup]);
+            setShowModal(false);
+            return;
+        }
+        setMuscles([...muscles, muscleGroup]);
+
+        if (muscles.length === 2) {
+            setShowModal(false);
+        }
     }
 
     return (
@@ -40,9 +64,12 @@ export default function Generator() {
                 {Object.keys(WORKOUTS).map((type, typeIndex) => {
                     return (
                         <button
-                            onClick={() => setPoison(type)}
+                            onClick={() => {
+                                setMuscles([]);
+                                setPoison(type);
+                            }}
                             className={
-                                'bg-slate-950 border border-blue-400 duration-200 hover:border-blue-600 py-3 rounded-lg' +
+                                'bg-slate-950 px-4 border border-blue-400 duration-200 hover:border-blue-600 py-3 rounded-lg' +
                                 (type === poison ? ' border-blue-600' : '')
                             }
                             key={typeIndex}
@@ -64,22 +91,36 @@ export default function Generator() {
                     onClick={toggleselect}
                     className="relative flex items-center p-3 justify-center"
                 >
-                    <p>Select muscle groups</p>
+                    <p className="capitalize">
+                        {muscles.length === 0
+                            ? 'Select muscle groups'
+                            : muscles.join(' ')}
+                    </p>
                     <i className="fa-solid fa-caret-down absolute right-3 top-1/2 -translate-y-1/2"></i>
                 </button>
                 {showModal && (
-                    <div className="flex flex-col p-3">
-                        {poison === 'individual'
+                    <div className="flex flex-col px-3 pb-3">
+                        {(poison === 'individual'
                             ? WORKOUTS[poison]
-                            : Object.keys(WORKOUTS[poison]).map(
-                                  (muscleGroup, muscleGroupIndex) => {
-                                      return (
-                                          <button key={muscleGroupIndex}>
-                                              <p>{muscleGroup}</p>
-                                          </button>
-                                      );
-                                  }
-                              )}
+                            : Object.keys(WORKOUTS[poison])
+                        ).map((muscleGroup, muscleGroupIndex) => {
+                            return (
+                                <button
+                                    onClick={() => updateMuscles(muscleGroup)}
+                                    key={muscleGroupIndex}
+                                    className={
+                                        'hover:text-blue-400 duration-200 ' +
+                                        (muscles.includes(muscleGroup)
+                                            ? ' text-blue-400'
+                                            : '')
+                                    }
+                                >
+                                    <p className="uppercase">
+                                        {muscleGroup.replaceAll('_', ' ')}
+                                    </p>
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -94,7 +135,7 @@ export default function Generator() {
                         <button
                             onClick={() => setGoal(scheme)}
                             className={
-                                'bg-slate-950 border border-blue-400 duration-200 hover:border-blue-600 py-3 rounded-lg' +
+                                'bg-slate-950 border border-blue-400 duration-200 hover:border-blue-600 py-3 px-4 rounded-lg' +
                                 (scheme === goal ? ' border-blue-600' : '')
                             }
                             key={schemeIndex}
@@ -106,6 +147,7 @@ export default function Generator() {
                     );
                 })}
             </div>
+            <Button text="Formulate" />
         </SectionWrapper>
     );
 }
