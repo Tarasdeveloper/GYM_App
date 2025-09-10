@@ -11,8 +11,12 @@ export default function App() {
     const [goal, setGoal] = useState('strength_power');
 
     function updateWorkout() {
-        let newWorkout = generateWorkout(poison, muscles, goal);
+        if (muscles.length < 1) return;
+
+        let newWorkout = generateWorkout({ poison, muscles, goal });
         setWorkout(newWorkout);
+
+        window.location.href = '#workout';
     }
 
     return (
@@ -25,6 +29,7 @@ export default function App() {
                 setMuscles={setMuscles}
                 goal={goal}
                 setGoal={setGoal}
+                updateWorkout={updateWorkout}
             />
             {workout && <Workout workout={workout} />}
         </main>
